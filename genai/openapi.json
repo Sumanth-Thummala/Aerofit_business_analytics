@@ -1,0 +1,5778 @@
+{
+   "openapi": "3.1.0",
+   "info": {
+     "title": "TalentLMS API",
+     "version": "6.0",
+     "description": "Cloud, lean and complete LMS with an emphasis on usability and easy course creation"
+   },
+   "servers": [
+     {
+       "url": "https://{domain}.talentlms.com/api",
+       "variables": {
+         "domain": {
+           "default": "example"
+         }
+       }
+     }
+   ],
+   "paths": {
+     "/v1/userlogout": {
+       "post": {
+         "summary": "User logout",
+         "description": "Logout a user from the TalentLMS domain",
+         "operationId": "logoutUser",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "query",
+             "description": "The ID of the user to logout",
+             "required": true,
+             "schema": {
+               "type": "string"
+             }
+           },
+           {
+             "name": "next",
+             "in": "query",
+             "description": "The URL to redirect the user after logout (optional)",
+             "required": false,
+             "schema": {
+               "type": "string"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "redirect_url": {
+                       "type": "string",
+                       "description": "The URL to redirect the user for logout"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/userlogin": {
+       "post": {
+         "summary": "User login",
+         "operationId": "loginUser",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "login": {
+                     "type": "string",
+                     "description": "Username of the user"
+                   },
+                   "password": {
+                     "type": "string",
+                     "description": "Password of the user"
+                   },
+                   "logout_redirect": {
+                     "type": "string",
+                     "description": "URL to redirect the user when they log out (optional)"
+                   }
+                 },
+                 "required": [
+                   "login",
+                   "password"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful login",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string",
+                       "description": "ID of the logged in user"
+                     },
+                     "login_key": {
+                       "type": "string",
+                       "description": "URL for auto-login"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Invalid request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "enum": [
+                         "invalid_request_error"
+                       ]
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid credentials",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "enum": [
+                         "invalid_request_error"
+                       ]
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/isuseronline/user_id:{user_id}": {
+       "get": {
+         "operationId": "checkUserOnline",
+         "summary": "Check if a user is online",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to check"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "online": {
+                       "type": "boolean",
+                       "description": "Indicates whether the user is online or not"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "enum": [
+                         "invalid_request_error"
+                       ]
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "enum": [
+                         "api_error"
+                       ]
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "User not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "enum": [
+                         "api_error"
+                       ]
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/deleteuser": {
+       "post": {
+         "summary": "Delete a user",
+         "operationId": "deleteUser",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to be deleted"
+           },
+           {
+             "name": "deleted_by_user_id",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user responsible for the deletion (optional)"
+           },
+           {
+             "name": "permanent",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string",
+               "enum": [
+                 "yes",
+                 "no"
+               ]
+             },
+             "description": "Whether to permanently delete the user (optional)"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "message": {
+                       "type": "string",
+                       "example": "Operation completed successfully"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Invalid API key provided"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "The requested resource does not exist"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/users": {
+       "get": {
+         "summary": "Retrieve all users",
+         "operationId": "getAllUsers",
+         "parameters": [
+           {
+             "name": "page_size",
+             "in": "query",
+             "description": "Number of users to return per page",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "page_number",
+             "in": "query",
+             "description": "Page number to retrieve",
+             "schema": {
+               "type": "integer",
+               "default": 1
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "login": {
+                         "type": "string"
+                       },
+                       "first_name": {
+                         "type": "string"
+                       },
+                       "last_name": {
+                         "type": "string"
+                       },
+                       "email": {
+                         "type": "string"
+                       },
+                       "restrict_email": {
+                         "type": "string"
+                       },
+                       "user_type": {
+                         "type": "string"
+                       },
+                       "timezone": {
+                         "type": "string"
+                       },
+                       "language": {
+                         "type": "string"
+                       },
+                       "status": {
+                         "type": "string"
+                       },
+                       "deactivation_date": {
+                         "type": "string"
+                       },
+                       "level": {
+                         "type": "string"
+                       },
+                       "points": {
+                         "type": "string"
+                       },
+                       "credits": {
+                         "type": "string"
+                       },
+                       "created_on": {
+                         "type": "string"
+                       },
+                       "last_updated": {
+                         "type": "string"
+                       },
+                       "last_updated_timestamp": {
+                         "type": "string"
+                       },
+                       "avatar": {
+                         "type": "string"
+                       },
+                       "bio": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "login_key": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/usersignup": {
+       "post": {
+         "summary": "Sign up a new user",
+         "operationId": "signupUser",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "first_name": {
+                     "type": "string"
+                   },
+                   "last_name": {
+                     "type": "string"
+                   },
+                   "email": {
+                     "type": "string",
+                     "format": "email"
+                   },
+                   "login": {
+                     "type": "string"
+                   },
+                   "password": {
+                     "type": "string",
+                     "format": "password"
+                   },
+                   "branch_id": {
+                     "type": "integer"
+                   },
+                   "group_id": {
+                     "type": "integer"
+                   },
+                   "user_type": {
+                     "type": "string"
+                   },
+                   "language": {
+                     "type": "string"
+                   },
+                   "restrict_email": {
+                     "type": "string",
+                     "enum": [
+                       "on",
+                       "off"
+                     ]
+                   }
+                 },
+                 "required": [
+                   "first_name",
+                   "last_name",
+                   "email",
+                   "login",
+                   "password"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "login": {
+                       "type": "string"
+                     },
+                     "first_name": {
+                       "type": "string"
+                     },
+                     "last_name": {
+                       "type": "string"
+                     },
+                     "email": {
+                       "type": "string"
+                     },
+                     "restrict_email": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "points": {
+                       "type": "string"
+                     },
+                     "credits": {
+                       "type": "string"
+                     },
+                     "created_on": {
+                       "type": "string"
+                     },
+                     "last_updated": {
+                       "type": "string"
+                     },
+                     "last_updated_timestamp": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "bio": {
+                       "type": "string"
+                     },
+                     "login_key": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/edituser": {
+       "post": {
+         "summary": "Edit user",
+         "operationId": "editUser",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/x-www-form-urlencoded": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "user_id": {
+                     "type": "string",
+                     "description": "The ID of the user to edit"
+                   },
+                   "first_name": {
+                     "type": "string",
+                     "description": "The user's first name"
+                   },
+                   "last_name": {
+                     "type": "string",
+                     "description": "The user's last name"
+                   },
+                   "email": {
+                     "type": "string",
+                     "format": "email",
+                     "description": "The user's email address"
+                   },
+                   "login": {
+                     "type": "string",
+                     "description": "The user's login username"
+                   },
+                   "password": {
+                     "type": "string",
+                     "description": "The user's password"
+                   },
+                   "bio": {
+                     "type": "string",
+                     "description": "The user's biography"
+                   },
+                   "timezone": {
+                     "type": "string",
+                     "description": "The user's timezone"
+                   },
+                   "credits": {
+                     "type": "string",
+                     "description": "The user's credits"
+                   },
+                   "deactivation_date": {
+                     "type": "string",
+                     "format": "date",
+                     "description": "The date on which the user will be automatically deactivated"
+                   },
+                   "restrict_email": {
+                     "type": "string",
+                     "enum": [
+                       "on",
+                       "off"
+                     ],
+                     "description": "Whether to exclude the user from emails"
+                   }
+                 },
+                 "required": [
+                   "user_id"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "login": {
+                       "type": "string"
+                     },
+                     "first_name": {
+                       "type": "string"
+                     },
+                     "last_name": {
+                       "type": "string"
+                     },
+                     "email": {
+                       "type": "string"
+                     },
+                     "restrict_email": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "deactivation_date": {
+                       "type": "string"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "points": {
+                       "type": "string"
+                     },
+                     "credits": {
+                       "type": "string"
+                     },
+                     "created_on": {
+                       "type": "string"
+                     },
+                     "last_updated": {
+                       "type": "string"
+                     },
+                     "last_updated_timestamp": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "bio": {
+                       "type": "string"
+                     },
+                     "login_key": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "User not found"
+           }
+         }
+       }
+     },
+     "/v1/users/id:{userId}": {
+       "get": {
+         "summary": "Retrieve a specific user",
+         "operationId": "getUserById",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "integer"
+             },
+             "description": "The unique identifier of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "login": {
+                       "type": "string"
+                     },
+                     "first_name": {
+                       "type": "string"
+                     },
+                     "last_name": {
+                       "type": "string"
+                     },
+                     "email": {
+                       "type": "string"
+                     },
+                     "restrict_email": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "deactivation_date": {
+                       "type": "string"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "points": {
+                       "type": "string"
+                     },
+                     "credits": {
+                       "type": "string"
+                     },
+                     "created_on": {
+                       "type": "string"
+                     },
+                     "last_updated": {
+                       "type": "string"
+                     },
+                     "last_updated_timestamp": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "bio": {
+                       "type": "string"
+                     },
+                     "login_key": {
+                       "type": "string"
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "role": {
+                             "type": "string"
+                           },
+                           "enrolled_on": {
+                             "type": "string"
+                           },
+                           "enrolled_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completed_on": {
+                             "type": "string"
+                           },
+                           "completed_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completion_status": {
+                             "type": "string"
+                           },
+                           "completion_status_formatted": {
+                             "type": "string"
+                           },
+                           "completion_percentage": {
+                             "type": "string"
+                           },
+                           "expired_on": {
+                             "type": "string"
+                           },
+                           "expired_on_timestamp": {
+                             "type": "string"
+                           },
+                           "total_time": {
+                             "type": "string"
+                           },
+                           "total_time_seconds": {
+                             "type": "integer"
+                           },
+                           "last_accessed_unit_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "branches": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "groups": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "certifications": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "course_id": {
+                             "type": "string"
+                           },
+                           "course_name": {
+                             "type": "string"
+                           },
+                           "unique_id": {
+                             "type": "string"
+                           },
+                           "issued_date": {
+                             "type": "string"
+                           },
+                           "issued_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "expiration_date": {
+                             "type": "string"
+                           },
+                           "expiration_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "download_url": {
+                             "type": "string"
+                           },
+                           "public_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "badges": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "name": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "image_url": {
+                             "type": "string"
+                           },
+                           "criteria": {
+                             "type": "string"
+                           },
+                           "issued_on": {
+                             "type": "string"
+                           },
+                           "issued_on_timestamp": {
+                             "type": "integer"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "User not found"
+           }
+         }
+       }
+     },
+     "/v1/users/email:{userEmail}": {
+       "get": {
+         "summary": "Retrieve a user by email",
+         "operationId": "getUserByEmail",
+         "parameters": [
+           {
+             "name": "userEmail",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "Email address of the user to retrieve"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "login": {
+                       "type": "string"
+                     },
+                     "first_name": {
+                       "type": "string"
+                     },
+                     "last_name": {
+                       "type": "string"
+                     },
+                     "email": {
+                       "type": "string"
+                     },
+                     "restrict_email": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "deactivation_date": {
+                       "type": "string"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "points": {
+                       "type": "string"
+                     },
+                     "credits": {
+                       "type": "string"
+                     },
+                     "created_on": {
+                       "type": "string"
+                     },
+                     "last_updated": {
+                       "type": "string"
+                     },
+                     "last_updated_timestamp": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "bio": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "login_key": {
+                       "type": "string"
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "role": {
+                             "type": "string"
+                           },
+                           "enrolled_on": {
+                             "type": "string"
+                           },
+                           "enrolled_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completed_on": {
+                             "type": "string"
+                           },
+                           "completed_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completion_status": {
+                             "type": "string"
+                           },
+                           "completion_status_formatted": {
+                             "type": "string"
+                           },
+                           "completion_percentage": {
+                             "type": "string"
+                           },
+                           "expired_on": {
+                             "type": "string"
+                           },
+                           "expired_on_timestamp": {
+                             "type": "string"
+                           },
+                           "total_time": {
+                             "type": "string"
+                           },
+                           "total_time_seconds": {
+                             "type": "integer"
+                           },
+                           "last_accessed_unit_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "branches": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "groups": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "certifications": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "course_id": {
+                             "type": "string"
+                           },
+                           "course_name": {
+                             "type": "string"
+                           },
+                           "unique_id": {
+                             "type": "string"
+                           },
+                           "issued_date": {
+                             "type": "string"
+                           },
+                           "issued_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "expiration_date": {
+                             "type": "string"
+                           },
+                           "expiration_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "download_url": {
+                             "type": "string"
+                           },
+                           "public_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "badges": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "name": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "image_url": {
+                             "type": "string"
+                           },
+                           "criteria": {
+                             "type": "string"
+                           },
+                           "issued_on": {
+                             "type": "string"
+                           },
+                           "issued_on_timestamp": {
+                             "type": "integer"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "User not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/users/username:{userName}": {
+       "get": {
+         "summary": "Retrieve a user by username",
+         "operationId": "getUserByUsername",
+         "parameters": [
+           {
+             "name": "userName",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "Username of the user to retrieve"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "login": {
+                       "type": "string"
+                     },
+                     "first_name": {
+                       "type": "string"
+                     },
+                     "last_name": {
+                       "type": "string"
+                     },
+                     "email": {
+                       "type": "string"
+                     },
+                     "restrict_email": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "deactivation_date": {
+                       "type": "string"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "points": {
+                       "type": "string"
+                     },
+                     "credits": {
+                       "type": "string"
+                     },
+                     "created_on": {
+                       "type": "string"
+                     },
+                     "last_updated": {
+                       "type": "string"
+                     },
+                     "last_updated_timestamp": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "bio": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "login_key": {
+                       "type": "string"
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "role": {
+                             "type": "string"
+                           },
+                           "enrolled_on": {
+                             "type": "string"
+                           },
+                           "enrolled_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completed_on": {
+                             "type": "string"
+                           },
+                           "completed_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completion_status": {
+                             "type": "string"
+                           },
+                           "completion_status_formatted": {
+                             "type": "string"
+                           },
+                           "completion_percentage": {
+                             "type": "string"
+                           },
+                           "expired_on": {
+                             "type": "string"
+                           },
+                           "expired_on_timestamp": {
+                             "type": "string"
+                           },
+                           "total_time": {
+                             "type": "string"
+                           },
+                           "total_time_seconds": {
+                             "type": "integer"
+                           },
+                           "last_accessed_unit_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "branches": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "groups": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "certifications": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "course_id": {
+                             "type": "string"
+                           },
+                           "course_name": {
+                             "type": "string"
+                           },
+                           "unique_id": {
+                             "type": "string"
+                           },
+                           "issued_date": {
+                             "type": "string"
+                           },
+                           "issued_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "expiration_date": {
+                             "type": "string"
+                           },
+                           "expiration_date_timestamp": {
+                             "type": "integer"
+                           },
+                           "download_url": {
+                             "type": "string"
+                           },
+                           "public_url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "badges": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "name": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "image_url": {
+                             "type": "string"
+                           },
+                           "criteria": {
+                             "type": "string"
+                           },
+                           "issued_on": {
+                             "type": "string"
+                           },
+                           "issued_on_timestamp": {
+                             "type": "integer"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "User not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/categories": {
+       "get": {
+         "summary": "Retrieve all categories",
+         "operationId": "getAllCategories",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "price": {
+                         "type": "string"
+                       },
+                       "parent_category_id": {
+                         "type": "string",
+                         "nullable": true
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/groups": {
+       "get": {
+         "summary": "Retrieve all groups",
+         "operationId": "getAllGroups",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "description": {
+                         "type": "string"
+                       },
+                       "key": {
+                         "type": "string"
+                       },
+                       "price": {
+                         "type": "string"
+                       },
+                       "owner_id": {
+                         "type": "string"
+                       },
+                       "belongs_to_branch": {
+                         "type": "string"
+                       },
+                       "max_redemptions": {
+                         "type": "string"
+                       },
+                       "redemptions_sofar": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/usersetstatus/user_id:{userId},status:{status}": {
+       "post": {
+         "summary": "Set user status",
+         "description": "Change the status (active or inactive) of a user",
+         "operationId": "setUserStatus",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           },
+           {
+             "name": "status",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "enum": [
+                 "active",
+                 "inactive"
+               ]
+             },
+             "description": "The new status of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string",
+                       "enum": [
+                         "active",
+                         "inactive"
+                       ]
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "User not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/groups/id:{groupId}": {
+       "get": {
+         "summary": "Retrieve a specific group",
+         "operationId": "getGroupById",
+         "parameters": [
+           {
+             "name": "groupId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the group"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "key": {
+                       "type": "string"
+                     },
+                     "price": {
+                       "type": "string"
+                     },
+                     "owner_id": {
+                       "type": "string"
+                     },
+                     "belongs_to_branch": {
+                       "type": "string"
+                     },
+                     "max_redemptions": {
+                       "type": "string"
+                     },
+                     "redemptions_sofar": {
+                       "type": "string"
+                     },
+                     "users": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "404": {
+             "description": "The requested group does not exist"
+           }
+         }
+       }
+     },
+     "/v1/creategroup": {
+       "post": {
+         "summary": "Create a new group",
+         "operationId": "createGroup",
+         "parameters": [],
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "name": {
+                     "type": "string",
+                     "description": "Name of the group"
+                   },
+                   "description": {
+                     "type": "string",
+                     "description": "Description of the group"
+                   },
+                   "key": {
+                     "type": "string",
+                     "description": "Key of the group"
+                   },
+                   "price": {
+                     "type": "string",
+                     "description": "Price of the group"
+                   },
+                   "creator_id": {
+                     "type": "string",
+                     "description": "ID of the user creating the group"
+                   },
+                   "max_redemptions": {
+                     "type": "string",
+                     "description": "Maximum number of redemptions"
+                   }
+                 },
+                 "required": [
+                   "name"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "key": {
+                       "type": "string"
+                     },
+                     "price": {
+                       "type": "string"
+                     },
+                     "owner_id": {
+                       "type": "string"
+                     },
+                     "belongs_to_branch": {
+                       "type": "string"
+                     },
+                     "max_redemptions": {
+                       "type": "string"
+                     },
+                     "redemptions_sofar": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/categories/id:{categoryId}": {
+       "get": {
+         "summary": "Retrieve a specific category",
+         "operationId": "getCategoryById",
+         "parameters": [
+           {
+             "name": "categoryId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "integer"
+             },
+             "description": "Unique identifier of the category"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "price": {
+                       "type": "string"
+                     },
+                     "parent_category_id": {
+                       "type": [
+                         "string",
+                         "null"
+                       ]
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "description": {
+                             "type": "string"
+                           },
+                           "price": {
+                             "type": "string"
+                           },
+                           "status": {
+                             "type": "string"
+                           },
+                           "hide_from_catalog": {
+                             "type": "string"
+                           },
+                           "level": {
+                             "type": "string"
+                           },
+                           "shared": {
+                             "type": "string"
+                           },
+                           "shared_url": {
+                             "type": "string"
+                           },
+                           "avatar": {
+                             "type": "string"
+                           },
+                           "big_avatar": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Category not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/deletecourse": {
+       "post": {
+         "summary": "Delete a course",
+         "operationId": "deleteCourse",
+         "parameters": [
+           {
+             "name": "course_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the course to be deleted"
+           },
+           {
+             "name": "deleted_by_user_id",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user responsible for deleting the course. If omitted, the owner of the account (super-administrator) is responsible"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "message": {
+                       "type": "string",
+                       "example": "Operation completed successfully"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "api_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Invalid API key provided"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "api_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "The requested course does not exist"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/courses": {
+       "get": {
+         "summary": "Retrieve all courses",
+         "operationId": "getAllCourses",
+         "parameters": [
+           {
+             "name": "page_size",
+             "in": "query",
+             "description": "Number of courses to return per page",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "page_number",
+             "in": "query",
+             "description": "Page number to retrieve",
+             "schema": {
+               "type": "integer",
+               "default": 1
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "code": {
+                         "type": "string"
+                       },
+                       "category_id": {
+                         "type": "string"
+                       },
+                       "description": {
+                         "type": "string"
+                       },
+                       "price": {
+                         "type": "string"
+                       },
+                       "status": {
+                         "type": "string"
+                       },
+                       "creation_date": {
+                         "type": "string"
+                       },
+                       "last_update_on": {
+                         "type": "string"
+                       },
+                       "creator_id": {
+                         "type": "string"
+                       },
+                       "hide_from_catalog": {
+                         "type": "string"
+                       },
+                       "time_limit": {
+                         "type": "string"
+                       },
+                       "start_datetime": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "expiration_datetime": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "level": {
+                         "type": "string"
+                       },
+                       "shared": {
+                         "type": "string"
+                       },
+                       "shared_url": {
+                         "type": "string"
+                       },
+                       "avatar": {
+                         "type": "string"
+                       },
+                       "big_avatar": {
+                         "type": "string"
+                       },
+                       "certification": {
+                         "type": "string"
+                       },
+                       "certification_duration": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/createcourse": {
+       "post": {
+         "summary": "Create a new course",
+         "operationId": "createCourse",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "name": {
+                     "type": "string",
+                     "description": "Name of the course"
+                   },
+                   "description": {
+                     "type": "string",
+                     "description": "Description of the course"
+                   },
+                   "code": {
+                     "type": "string",
+                     "description": "Course code"
+                   },
+                   "price": {
+                     "type": "string",
+                     "description": "Price of the course"
+                   },
+                   "time_limit": {
+                     "type": "string",
+                     "description": "Time limit for the course"
+                   },
+                   "start_datetime": {
+                     "type": "string",
+                     "format": "date-time",
+                     "description": "Start date and time of the course"
+                   },
+                   "expiration_datetime": {
+                     "type": "string",
+                     "format": "date-time",
+                     "description": "Expiration date and time of the course"
+                   },
+                   "category_id": {
+                     "type": "string",
+                     "description": "ID of the category the course belongs to"
+                   },
+                   "creator_id": {
+                     "type": "string",
+                     "description": "ID of the user creating the course"
+                   }
+                 },
+                 "required": [
+                   "name"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "code": {
+                       "type": "string"
+                     },
+                     "category_id": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "price": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "creation_date": {
+                       "type": "string"
+                     },
+                     "last_update_on": {
+                       "type": "string"
+                     },
+                     "creator_id": {
+                       "type": "string"
+                     },
+                     "hide_from_catalog": {
+                       "type": "string"
+                     },
+                     "time_limit": {
+                       "type": "string"
+                     },
+                     "start_datetime": {
+                       "type": "string",
+                       "format": "date-time"
+                     },
+                     "expiration_datetime": {
+                       "type": "string",
+                       "format": "date-time"
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "shared": {
+                       "type": "string"
+                     },
+                     "shared_url": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "big_avatar": {
+                       "type": "string"
+                     },
+                     "certification": {
+                       "type": "string"
+                     },
+                     "certification_duration": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/courses/{courseId}": {
+       "get": {
+         "summary": "Retrieve a specific course",
+         "operationId": "getCourseById",
+         "parameters": [
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "integer"
+             },
+             "description": "The unique identifier of the course"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "code": {
+                       "type": "string"
+                     },
+                     "category_id": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "price": {
+                       "type": "string"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "creation_date": {
+                       "type": "string"
+                     },
+                     "last_update_on": {
+                       "type": "string"
+                     },
+                     "creator_id": {
+                       "type": "string"
+                     },
+                     "hide_from_catalog": {
+                       "type": "string"
+                     },
+                     "time_limit": {
+                       "type": "string"
+                     },
+                     "start_datetime": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "expiration_datetime": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "level": {
+                       "type": "string"
+                     },
+                     "shared": {
+                       "type": "string"
+                     },
+                     "shared_url": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "big_avatar": {
+                       "type": "string"
+                     },
+                     "certification": {
+                       "type": "string"
+                     },
+                     "certification_duration": {
+                       "type": "string"
+                     },
+                     "users": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "role": {
+                             "type": "string"
+                           },
+                           "enrolled_on": {
+                             "type": "string"
+                           },
+                           "enrolled_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completed_on": {
+                             "type": "string"
+                           },
+                           "completed_on_timestamp": {
+                             "type": "string"
+                           },
+                           "completion_percentage": {
+                             "type": "string"
+                           },
+                           "expired_on": {
+                             "type": "string"
+                           },
+                           "expired_on_timestamp": {
+                             "type": "string"
+                           },
+                           "total_time": {
+                             "type": "string"
+                           },
+                           "total_time_seconds": {
+                             "type": "integer"
+                           }
+                         }
+                       }
+                     },
+                     "units": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           },
+                           "url": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "rules": {
+                       "type": "array",
+                       "items": {
+                         "type": "string"
+                       }
+                     },
+                     "prerequisites": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "course_id": {
+                             "type": "string"
+                           },
+                           "course_name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "prerequisite_rule_sets": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "course_id": {
+                             "type": "string"
+                           },
+                           "course_name": {
+                             "type": "string"
+                           },
+                           "rule_set": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "Course not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/forgotusername/email:{email},domain_url:{domainUrl}": {
+       "post": {
+         "summary": "Forgot username",
+         "description": "Send an email containing the username to the user who forgot it",
+         "operationId": "forgotUsername",
+         "parameters": [
+           {
+             "name": "email",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "format": "email"
+             },
+             "description": "Email address of the user"
+           },
+           {
+             "name": "domainUrl",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "URL to appear in the email (optional)"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Invalid input"
+           },
+           "404": {
+             "description": "User not found"
+           }
+         }
+       }
+     },
+     "/v1/removeuserfromcourse": {
+       "post": {
+         "summary": "Un-enroll user from course",
+         "operationId": "removeUserFromCourse",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to un-enroll"
+           },
+           {
+             "name": "course_id",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the course to un-enroll the user from"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "course_id": {
+                       "type": "string"
+                     },
+                     "course_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "User or course not found"
+           }
+         }
+       }
+     },
+     "/v1/deletegroup": {
+       "post": {
+         "summary": "Delete a group",
+         "operationId": "deleteGroup",
+         "parameters": [
+           {
+             "name": "group_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the group to be deleted"
+           },
+           {
+             "name": "deleted_by_user_id",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The user ID responsible for deleting the group (optional)"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "message": {
+                       "type": "string",
+                       "example": "Operation completed successfully"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Group not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/deletebranch": {
+       "post": {
+         "summary": "Delete a branch",
+         "operationId": "deleteBranch",
+         "parameters": [
+           {
+             "name": "branch_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the branch to be deleted"
+           },
+           {
+             "name": "deleted_by_user_id",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The user ID responsible for deleting the branch"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "message": {
+                       "type": "string",
+                       "example": "Operation completed successfully"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Branch not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/addusertocourse": {
+       "post": {
+         "summary": "Enroll user to course",
+         "operationId": "addUserToCourse",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "query",
+             "description": "ID of the user to enroll",
+             "required": true,
+             "schema": {
+               "type": "string"
+             }
+           },
+           {
+             "name": "course_id",
+             "in": "query",
+             "description": "ID of the course to enroll the user in",
+             "required": true,
+             "schema": {
+               "type": "string"
+             }
+           },
+           {
+             "name": "role",
+             "in": "query",
+             "description": "Role of the user in the course",
+             "required": false,
+             "schema": {
+               "type": "string",
+               "enum": [
+                 "learner",
+                 "instructor"
+               ]
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "user_id": {
+                         "type": "string"
+                       },
+                       "course_id": {
+                         "type": "string"
+                       },
+                       "role": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/branchsetstatus/branch_id:{branchId},status:{status}": {
+       "post": {
+         "summary": "Set branch status",
+         "operationId": "setBranchStatus",
+         "parameters": [
+           {
+             "name": "branchId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "integer"
+             },
+             "description": "The ID of the branch"
+           },
+           {
+             "name": "status",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "enum": [
+                 "active",
+                 "inactive"
+               ]
+             },
+             "description": "The new status of the branch"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "branch_id": {
+                       "type": "integer"
+                     },
+                     "status": {
+                       "type": "string",
+                       "enum": [
+                         "active",
+                         "inactive"
+                       ]
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/forgotpassword/username:{userName},domain_url:{url},redirect_url:{url}": {
+       "post": {
+         "summary": "Forgot password",
+         "description": "Sends an email with instructions on how to reset the password for a user",
+         "operationId": "forgotPassword",
+         "parameters": [
+           {
+             "name": "userName",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The username of the user"
+           },
+           {
+             "name": "domain_url",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The URL to appear in the email (optional)"
+           },
+           {
+             "name": "redirect_url",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The URL to redirect the user after entering the new password (optional)"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "500": {
+             "description": "Internal server error",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/branches": {
+       "get": {
+         "summary": "Retrieve all branches",
+         "operationId": "getAllBranches",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "description": {
+                         "type": "string"
+                       },
+                       "avatar": {
+                         "type": "string"
+                       },
+                       "theme": {
+                         "type": "string"
+                       },
+                       "timezone": {
+                         "type": "string"
+                       },
+                       "signup_method": {
+                         "type": "string"
+                       },
+                       "signup_type": {
+                         "type": "string"
+                       },
+                       "verification": {
+                         "type": "string"
+                       },
+                       "internal_announcement": {
+                         "type": "string"
+                       },
+                       "external_announcement": {
+                         "type": "string"
+                       },
+                       "language": {
+                         "type": "string"
+                       },
+                       "user_type_id": {
+                         "type": "string"
+                       },
+                       "user_type": {
+                         "type": "string"
+                       },
+                       "group_id": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "registration_email_restriction": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "users_limit": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "disallow_global_login": {
+                         "type": "string"
+                       },
+                       "payment_processor": {
+                         "type": "string"
+                       },
+                       "currency": {
+                         "type": "string"
+                       },
+                       "paypal_email": {
+                         "type": "string"
+                       },
+                       "ecommerce_subscription": {
+                         "type": "string"
+                       },
+                       "ecommerce_subscription_price": {
+                         "type": "string"
+                       },
+                       "ecommerce_subscription_interval": {
+                         "type": "string"
+                       },
+                       "ecommerce_credits": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           }
+         }
+       }
+     },
+     "/v1/branches/id:{branchId}": {
+       "get": {
+         "summary": "Retrieve a specific branch",
+         "operationId": "getBranchById",
+         "parameters": [
+           {
+             "name": "branchId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the branch"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "theme": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "signup_method": {
+                       "type": "string"
+                     },
+                     "signup_type": {
+                       "type": "string"
+                     },
+                     "verification": {
+                       "type": "string"
+                     },
+                     "internal_announcement": {
+                       "type": "string"
+                     },
+                     "external_announcement": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "user_type_id": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "group_id": {
+                       "type": [
+                         "string",
+                         "null"
+                       ]
+                     },
+                     "registration_email_restriction": {
+                       "type": [
+                         "string",
+                         "null"
+                       ]
+                     },
+                     "users_limit": {
+                       "type": [
+                         "integer",
+                         "null"
+                       ]
+                     },
+                     "disallow_global_login": {
+                       "type": "string"
+                     },
+                     "payment_processor": {
+                       "type": "string"
+                     },
+                     "currency": {
+                       "type": "string"
+                     },
+                     "paypal_email": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription_price": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription_interval": {
+                       "type": "string"
+                     },
+                     "ecommerce_credits": {
+                       "type": "string"
+                     },
+                     "users": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     },
+                     "courses": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "name": {
+                             "type": "string"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "404": {
+             "description": "The requested branch does not exist"
+           }
+         }
+       }
+     },
+     "/v1/createbranch": {
+       "post": {
+         "summary": "Create a new branch",
+         "operationId": "createBranch",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "name": {
+                     "type": "string",
+                     "description": "Name of the branch"
+                   },
+                   "description": {
+                     "type": "string",
+                     "description": "Description of the branch"
+                   },
+                   "disallow_global_login": {
+                     "type": "string",
+                     "description": "Whether to disallow global login"
+                   },
+                   "group_id": {
+                     "type": "string",
+                     "description": "ID of the group associated with the branch"
+                   },
+                   "language": {
+                     "type": "string",
+                     "description": "Language of the branch"
+                   },
+                   "timezone": {
+                     "type": "string",
+                     "description": "Timezone of the branch"
+                   },
+                   "signup_method": {
+                     "type": "string",
+                     "description": "Signup method for the branch"
+                   },
+                   "verification": {
+                     "type": "string",
+                     "description": "Verification method for the branch"
+                   },
+                   "user_type": {
+                     "type": "string",
+                     "description": "User type for the branch"
+                   },
+                   "registration_email_restriction": {
+                     "type": "string",
+                     "description": "Email restriction for registration"
+                   },
+                   "users_limit": {
+                     "type": "string",
+                     "description": "User limit for the branch"
+                   },
+                   "ecommerce_processor": {
+                     "type": "string",
+                     "description": "E-commerce processor for the branch"
+                   },
+                   "currency": {
+                     "type": "string",
+                     "description": "Currency for the branch"
+                   },
+                   "paypal_email": {
+                     "type": "string",
+                     "description": "PayPal email for the branch"
+                   },
+                   "ecommerce_subscription": {
+                     "type": "string",
+                     "description": "E-commerce subscription status"
+                   },
+                   "ecommerce_subscription_price": {
+                     "type": "string",
+                     "description": "E-commerce subscription price"
+                   },
+                   "ecommerce_subscription_interval": {
+                     "type": "string",
+                     "description": "E-commerce subscription interval"
+                   },
+                   "ecommerce_credits": {
+                     "type": "string",
+                     "description": "E-commerce credits for the branch"
+                   },
+                   "internal_announcement": {
+                     "type": "string",
+                     "description": "Internal announcement for the branch"
+                   },
+                   "external_announcement": {
+                     "type": "string",
+                     "description": "External announcement for the branch"
+                   },
+                   "creator_id": {
+                     "type": "string",
+                     "description": "ID of the creator of the branch"
+                   }
+                 },
+                 "required": [
+                   "name"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "id": {
+                       "type": "string"
+                     },
+                     "name": {
+                       "type": "string"
+                     },
+                     "description": {
+                       "type": "string"
+                     },
+                     "avatar": {
+                       "type": "string"
+                     },
+                     "theme": {
+                       "type": "string"
+                     },
+                     "timezone": {
+                       "type": "string"
+                     },
+                     "signup_method": {
+                       "type": "string"
+                     },
+                     "signup_type": {
+                       "type": "string"
+                     },
+                     "verification": {
+                       "type": "string"
+                     },
+                     "internal_announcement": {
+                       "type": "string"
+                     },
+                     "external_announcement": {
+                       "type": "string"
+                     },
+                     "language": {
+                       "type": "string"
+                     },
+                     "user_type_id": {
+                       "type": "string"
+                     },
+                     "user_type": {
+                       "type": "string"
+                     },
+                     "group_id": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "registration_email_restriction": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "users_limit": {
+                       "type": "string",
+                       "nullable": true
+                     },
+                     "disallow_global_login": {
+                       "type": "string"
+                     },
+                     "payment_processor": {
+                       "type": "string"
+                     },
+                     "currency": {
+                       "type": "string"
+                     },
+                     "paypal_email": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription_price": {
+                       "type": "string"
+                     },
+                     "ecommerce_subscription_interval": {
+                       "type": "string"
+                     },
+                     "ecommerce_credits": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/addusertogroup/user_id:{userId},group_key:{groupKey}": {
+       "post": {
+         "summary": "Add user to group",
+         "operationId": "addUserToGroup",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to add to the group"
+           },
+           {
+             "name": "groupKey",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The key of the group to add the user to"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "group_id": {
+                       "type": "string"
+                     },
+                     "group_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "User or group not found"
+           }
+         }
+       }
+     },
+     "/v1/removeuserfrombranch/{userId}/{branchId}": {
+       "post": {
+         "summary": "Remove user from branch",
+         "operationId": "removeUserFromBranch",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to be removed from the branch"
+           },
+           {
+             "name": "branchId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the branch from which the user will be removed"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "branch_id": {
+                       "type": "string"
+                     },
+                     "branch_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/removeuserfromgroup/{userId}/{groupId}": {
+       "post": {
+         "summary": "Remove user from group",
+         "description": "Remove a user from a group",
+         "operationId": "removeUserFromGroup",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user to remove from the group"
+           },
+           {
+             "name": "groupId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the group to remove the user from"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "group_id": {
+                       "type": "string"
+                     },
+                     "group_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/addcoursetogroup/{courseId}/{groupId}": {
+       "post": {
+         "summary": "Add course to group",
+         "operationId": "addCourseToGroup",
+         "parameters": [
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the course to add to the group"
+           },
+           {
+             "name": "groupId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the group to add the course to"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "course_id": {
+                       "type": "string"
+                     },
+                     "group_id": {
+                       "type": "string"
+                     },
+                     "group_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Invalid input"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "Course or group not found"
+           }
+         }
+       }
+     },
+     "/v1/addcoursetobranch/{courseId}/{branchId}": {
+       "post": {
+         "summary": "Add course to branch",
+         "operationId": "addCourseToBranch",
+         "parameters": [
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the course to add to the branch"
+           },
+           {
+             "name": "branchId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the branch to add the course to"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "course_id": {
+                       "type": "string"
+                     },
+                     "branch_id": {
+                       "type": "string"
+                     },
+                     "branch_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/addusertobranch/{userId}/{branchId}": {
+       "post": {
+         "summary": "Add user to branch",
+         "description": "Add a user to a branch",
+         "operationId": "addUserToBranch",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "description": "The ID of the user to add to the branch",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "branchId",
+             "in": "path",
+             "required": true,
+             "description": "The ID of the branch to add the user to",
+             "schema": {
+               "type": "integer"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "branch_id": {
+                       "type": "string"
+                     },
+                     "branch_name": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/gotocourse/{userId}/{courseId}": {
+       "get": {
+         "summary": "Goto course",
+         "description": "Login a user in your domain and redirect them to a specific course",
+         "operationId": "gotoCourse",
+         "parameters": [
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user"
+           },
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the course"
+           },
+           {
+             "name": "logout_redirect",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "URL to redirect the user when they log out"
+           },
+           {
+             "name": "course_completed_redirect",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "URL to redirect the user when they complete the course"
+           },
+           {
+             "name": "header_hidden_options",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "Semicolon-separated list of header items to hide"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "goto_url": {
+                       "type": "string",
+                       "description": "URL to redirect the user to the course"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/resetuserprogress/course_id:{courseId},user_id:{userId}": {
+       "post": {
+         "summary": "Reset user progress in a course",
+         "operationId": "resetUserProgress",
+         "parameters": [
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the course"
+           },
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           },
+           {
+             "name": "remove_certification",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string",
+               "enum": [
+                 "yes",
+                 "no"
+               ]
+             },
+             "description": "Whether to remove the certification for the user in this course"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "message": {
+                       "type": "string",
+                       "example": "Operation completed successfully"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Invalid API key provided"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "The requested resource does not exist"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/getusersbycustomfield/custom_field_value:{value}": {
+       "get": {
+         "summary": "Get users by custom field value",
+         "description": "Retrieve users filtered by the value in one of their custom registration fields",
+         "operationId": "getUsersByCustomField",
+         "parameters": [
+           {
+             "name": "value",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The value to filter users by in their custom registration fields"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "additionalProperties": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "login": {
+                         "type": "string"
+                       },
+                       "first_name": {
+                         "type": "string"
+                       },
+                       "last_name": {
+                         "type": "string"
+                       },
+                       "email": {
+                         "type": "string"
+                       },
+                       "restrict_email": {
+                         "type": "string"
+                       },
+                       "status": {
+                         "type": "string"
+                       },
+                       "language": {
+                         "type": "string"
+                       },
+                       "deactivation_date": {
+                         "type": "string"
+                       },
+                       "created_on": {
+                         "type": "string"
+                       },
+                       "last_updated": {
+                         "type": "string"
+                       },
+                       "last_updated_timestamp": {
+                         "type": "string"
+                       },
+                       "certifications": {
+                         "type": "array",
+                         "items": {
+                           "type": "object",
+                           "properties": {
+                             "course_id": {
+                               "type": "string"
+                             },
+                             "course_name": {
+                               "type": "string"
+                             },
+                             "unique_id": {
+                               "type": "string"
+                             },
+                             "issued_date": {
+                               "type": "string"
+                             },
+                             "issued_date_timestamp": {
+                               "type": "integer"
+                             },
+                             "expiration_date": {
+                               "type": "string"
+                             },
+                             "expiration_date_timestamp": {
+                               "type": "integer"
+                             },
+                             "download_url": {
+                               "type": "string"
+                             }
+                           }
+                         }
+                       },
+                       "public_url": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "Not found"
+           }
+         }
+       }
+     },
+     "/v1/getuserstatusincourse/course_id/{courseId}/user_id/{userId}": {
+       "get": {
+         "summary": "Get user status in course",
+         "description": "Retrieve the status of a user in a course and its units",
+         "operationId": "getUserStatusInCourse",
+         "parameters": [
+           {
+             "name": "courseId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the course"
+           },
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "role": {
+                       "type": "string",
+                       "example": "learner"
+                     },
+                     "enrolled_on": {
+                       "type": "string",
+                       "example": "21/10/2014, 15:21:29"
+                     },
+                     "enrolled_on_timestamp": {
+                       "type": "string",
+                       "example": "1413894089"
+                     },
+                     "completion_status": {
+                       "type": "string",
+                       "example": "Completed"
+                     },
+                     "completion_percentage": {
+                       "type": "string",
+                       "example": "100"
+                     },
+                     "completed_on": {
+                       "type": "string",
+                       "example": "22/10/2014, 10:26:15"
+                     },
+                     "completed_on_timestamp": {
+                       "type": "string",
+                       "example": "1413962775"
+                     },
+                     "expired_on": {
+                       "type": "string",
+                       "example": ""
+                     },
+                     "expired_on_timestamp": {
+                       "type": "string",
+                       "example": ""
+                     },
+                     "total_time": {
+                       "type": "string",
+                       "example": "3m 33s"
+                     },
+                     "total_time_seconds": {
+                       "type": "integer",
+                       "example": 213
+                     },
+                     "units": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string",
+                             "example": "1"
+                           },
+                           "name": {
+                             "type": "string",
+                             "example": "my test"
+                           },
+                           "type": {
+                             "type": "string",
+                             "example": "Test"
+                           },
+                           "completion_status": {
+                             "type": "string",
+                             "example": "Completed"
+                           },
+                           "completed_on": {
+                             "type": "string",
+                             "example": "22/10/2014, 10:25:29"
+                           },
+                           "completed_on_timestamp": {
+                             "type": "string",
+                             "example": "1413962729"
+                           },
+                           "score": {
+                             "type": "string",
+                             "example": "100"
+                           },
+                           "total_time": {
+                             "type": "string",
+                             "example": "1m 11s"
+                           },
+                           "total_time_seconds": {
+                             "type": "integer",
+                             "example": 71
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "A required parameter is missing or an invalid type was supplied"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Unauthorized",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Invalid API key provided"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Not found",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "type": {
+                       "type": "string",
+                       "example": "invalid_request_error"
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "The requested resource does not exist"
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/v1/buycourse": {
+       "post": {
+         "summary": "Buy a course",
+         "operationId": "buyCourse",
+         "requestBody": {
+           "required": true,
+           "content": {
+             "application/json": {
+               "schema": {
+                 "type": "object",
+                 "properties": {
+                   "user_id": {
+                     "type": "string",
+                     "description": "ID of the user buying the course"
+                   },
+                   "course_id": {
+                     "type": "string",
+                     "description": "ID of the course to be purchased"
+                   },
+                   "coupon": {
+                     "type": "string",
+                     "description": "Coupon code (optional)"
+                   }
+                 },
+                 "required": [
+                   "user_id",
+                   "course_id"
+                 ]
+               }
+             }
+           }
+         },
+         "responses": {
+           "200": {
+             "description": "Successful operation",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "redirect_url": {
+                       "type": "string",
+                       "description": "URL to redirect the user for payment"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Invalid input"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "User or course not found"
+           }
+         }
+       }
+     },
+     "/v1/buycategorycourses": {
+       "post": {
+         "summary": "Buy category courses",
+         "description": "Redirect a user to PayPal to buy all category courses as a bundle",
+         "operationId": "buyCategoryCourses",
+         "parameters": [
+           {
+             "name": "user_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the user"
+           },
+           {
+             "name": "category_id",
+             "in": "query",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The ID of the category"
+           },
+           {
+             "name": "coupon",
+             "in": "query",
+             "required": false,
+             "schema": {
+               "type": "string"
+             },
+             "description": "Optional coupon code"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "redirect_url": {
+                       "type": "string",
+                       "description": "URL to redirect the user to PayPal"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/getusersprogressinunits/unit_id:{unitId},user_id:{userId}": {
+       "get": {
+         "summary": "Get users progress in units",
+         "description": "Retrieve the score and completion status for unit-user pairs",
+         "operationId": "getUsersProgressInUnits",
+         "parameters": [
+           {
+             "name": "unitId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the unit"
+           },
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "user_id": {
+                         "type": "string"
+                       },
+                       "status": {
+                         "type": "string"
+                       },
+                       "score": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/getcustomcoursefields": {
+       "get": {
+         "summary": "Get custom course fields",
+         "description": "Retrieve the custom course fields defined in 'Account & Settings → Custom fields → Custom course fields'",
+         "operationId": "getCustomCourseFields",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "key": {
+                         "type": "string"
+                       },
+                       "type": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "mandatory": {
+                         "type": "string"
+                       },
+                       "visible_on_reports": {
+                         "type": "string"
+                       },
+                       "dropdown_values": {
+                         "type": "string"
+                       },
+                       "checkbox_status": {
+                         "type": "string"
+                       },
+                       "selective_availability": {
+                         "type": "string"
+                       },
+                       "branch": {
+                         "type": [
+                           "string",
+                           "null"
+                         ]
+                       },
+                       "main_domain_availability": {
+                         "type": [
+                           "string",
+                           "null"
+                         ]
+                       },
+                       "previous_key": {
+                         "type": [
+                           "string",
+                           "null"
+                         ]
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/getiltsessions/ilt_id:{iltId}": {
+       "get": {
+         "summary": "Get ILT sessions",
+         "description": "Retrieve the sessions of an ILT unit",
+         "operationId": "getIltSessions",
+         "parameters": [
+           {
+             "name": "ilt_id",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the ILT unit"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "multiname": {
+                         "type": "string"
+                       },
+                       "linked_to": {
+                         "type": "string"
+                       },
+                       "type": {
+                         "type": "string",
+                         "enum": [
+                           "webinar",
+                           "classroom"
+                         ]
+                       },
+                       "owner_id": {
+                         "type": "string"
+                       },
+                       "instructor_id": {
+                         "type": "string"
+                       },
+                       "description": {
+                         "type": "string"
+                       },
+                       "location": {
+                         "type": "string"
+                       },
+                       "start_timestamp": {
+                         "type": "string"
+                       },
+                       "start_date": {
+                         "type": "string"
+                       },
+                       "capacity": {
+                         "type": "string"
+                       },
+                       "duration_minutes": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/getcustomregistrationfields": {
+       "get": {
+         "summary": "Get custom registration fields",
+         "description": "Retrieve the custom registration fields defined in the system.",
+         "operationId": "getCustomRegistrationFields",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "key": {
+                         "type": "string"
+                       },
+                       "type": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "mandatory": {
+                         "type": "string"
+                       },
+                       "visible_on_reports": {
+                         "type": "string"
+                       },
+                       "dropdown_values": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "checkbox_status": {
+                         "type": "string"
+                       },
+                       "selective_availability": {
+                         "type": "string"
+                       },
+                       "branch": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "main_domain_availability": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "previous_key": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "order": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/getcoursesbycustomfield/custom_field_value:{value}": {
+       "get": {
+         "summary": "Get courses by custom field value",
+         "description": "Retrieve courses filtered by the value in one of their custom course fields",
+         "operationId": "getCoursesByCustomField",
+         "parameters": [
+           {
+             "name": "value",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The value to filter courses by"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "code": {
+                         "type": "string"
+                       },
+                       "category_id": {
+                         "type": "string"
+                       },
+                       "description": {
+                         "type": "string"
+                       },
+                       "price": {
+                         "type": "string"
+                       },
+                       "status": {
+                         "type": "string"
+                       },
+                       "creation_date": {
+                         "type": "string"
+                       },
+                       "last_update_on": {
+                         "type": "string"
+                       },
+                       "creator_id": {
+                         "type": "string"
+                       },
+                       "hide_from_catalog": {
+                         "type": "string"
+                       },
+                       "time_limit": {
+                         "type": "string"
+                       },
+                       "start_datetime": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "expiration_datetime": {
+                         "type": "string",
+                         "nullable": true
+                       },
+                       "level": {
+                         "type": "string"
+                       },
+                       "shared": {
+                         "type": "string"
+                       },
+                       "shared_url": {
+                         "type": "string"
+                       },
+                       "avatar": {
+                         "type": "string"
+                       },
+                       "big_avatar": {
+                         "type": "string"
+                       },
+                       "certification": {
+                         "type": "string"
+                       },
+                       "certification_duration": {
+                         "type": "string"
+                       },
+                       "custom_field_1": {
+                         "type": "string"
+                       },
+                       "custom_field_2": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/gettestanswers/{testId}/{userId}": {
+       "get": {
+         "summary": "Get test answers",
+         "description": "Retrieve the answers of a user in a test",
+         "operationId": "getTestAnswers",
+         "parameters": [
+           {
+             "name": "testId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the test"
+           },
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "test_id": {
+                       "type": "string"
+                     },
+                     "test_name": {
+                       "type": "string"
+                     },
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "user_name": {
+                       "type": "string"
+                     },
+                     "score": {
+                       "type": "string"
+                     },
+                     "completion_status": {
+                       "type": "string"
+                     },
+                     "completed_on": {
+                       "type": "string"
+                     },
+                     "completed_on_timestamp": {
+                       "type": "string"
+                     },
+                     "total_time": {
+                       "type": "string"
+                     },
+                     "total_time_seconds": {
+                       "type": "integer"
+                     },
+                     "questions": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "text": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "weight": {
+                             "type": "string"
+                           },
+                           "correct": {
+                             "type": "string"
+                           },
+                           "answers": {
+                             "type": "object"
+                           },
+                           "correct_answers": {
+                             "type": "object"
+                           },
+                           "user_answers": {
+                             "type": "object"
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "404": {
+             "description": "Not found"
+           }
+         }
+       }
+     },
+     "/v1/getsurveyanswers/survey_id:{surveyId},user_id:{userId}": {
+       "get": {
+         "summary": "Get survey answers",
+         "description": "Retrieve the answers of a user in a survey",
+         "operationId": "getSurveyAnswers",
+         "parameters": [
+           {
+             "name": "surveyId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the survey"
+           },
+           {
+             "name": "userId",
+             "in": "path",
+             "required": true,
+             "schema": {
+               "type": "string"
+             },
+             "description": "The unique identifier of the user"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "survey_id": {
+                       "type": "string"
+                     },
+                     "survey_name": {
+                       "type": "string"
+                     },
+                     "user_id": {
+                       "type": "string"
+                     },
+                     "user_name": {
+                       "type": "string"
+                     },
+                     "completion_status": {
+                       "type": "string"
+                     },
+                     "completed_on": {
+                       "type": "string"
+                     },
+                     "completed_on_timestamp": {
+                       "type": "string"
+                     },
+                     "total_time": {
+                       "type": "string"
+                     },
+                     "total_time_seconds": {
+                       "type": "integer"
+                     },
+                     "questions": {
+                       "type": "array",
+                       "items": {
+                         "type": "object",
+                         "properties": {
+                           "id": {
+                             "type": "string"
+                           },
+                           "text": {
+                             "type": "string"
+                           },
+                           "type": {
+                             "type": "string"
+                           },
+                           "answers": {
+                             "type": "object"
+                           },
+                           "user_answers": {
+                             "type": "array"
+                           },
+                           "child_questions": {
+                             "type": "array",
+                             "items": {
+                               "type": "object",
+                               "properties": {
+                                 "id": {
+                                   "type": "string"
+                                 },
+                                 "text": {
+                                   "type": "string"
+                                 },
+                                 "type": {
+                                   "type": "string"
+                                 },
+                                 "answers": {
+                                   "type": "array"
+                                 },
+                                 "user_answers": {
+                                   "type": "object"
+                                 }
+                               }
+                             }
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/categoryleafsandcourses/id:{categoryId}": {
+       "get": {
+         "summary": "Get category leafs and courses",
+         "description": "Retrieve the children categories of a specific category and the courses of these categories",
+         "operationId": "getCategoryLeafsAndCourses",
+         "parameters": [
+           {
+             "name": "categoryId",
+             "in": "path",
+             "required": true,
+             "description": "Unique identifier of the parent category",
+             "schema": {
+               "type": "integer"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "additionalProperties": {
+                     "type": "object",
+                     "properties": {
+                       "id": {
+                         "type": "string"
+                       },
+                       "name": {
+                         "type": "string"
+                       },
+                       "price": {
+                         "type": "string"
+                       },
+                       "parent_category_id": {
+                         "type": "string"
+                       },
+                       "courses": {
+                         "type": "array",
+                         "items": {
+                           "type": "object",
+                           "properties": {
+                             "id": {
+                               "type": "string"
+                             },
+                             "name": {
+                               "type": "string"
+                             },
+                             "description": {
+                               "type": "string"
+                             },
+                             "shared": {
+                               "type": "string"
+                             },
+                             "shared_url": {
+                               "type": "string"
+                             },
+                             "avatar": {
+                               "type": "string"
+                             },
+                             "big_avatar": {
+                               "type": "string"
+                             },
+                             "units": {
+                               "type": "array",
+                               "items": {
+                                 "type": "object",
+                                 "properties": {
+                                   "id": {
+                                     "type": "string"
+                                   },
+                                   "type": {
+                                     "type": "string"
+                                   },
+                                   "name": {
+                                     "type": "string"
+                                   },
+                                   "url": {
+                                     "type": "string"
+                                   },
+                                   "delay_time": {
+                                     "type": "string"
+                                   },
+                                   "aggregated_delay_time": {
+                                     "type": "string"
+                                   },
+                                   "formatted_aggregated_delay_time": {
+                                     "type": "string"
+                                   }
+                                 }
+                               }
+                             }
+                           }
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/ratelimit": {
+       "get": {
+         "summary": "Get rate limit information",
+         "operationId": "getRateLimit",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "limit": {
+                       "type": "string",
+                       "description": "Maximum number of requests permitted per hour"
+                     },
+                     "remaining": {
+                       "type": "string",
+                       "description": "Number of requests remaining in the current rate limit window"
+                     },
+                     "reset": {
+                       "type": "string",
+                       "description": "Time at which the current rate limit window resets in UTC epoch seconds"
+                     },
+                     "formatted_reset": {
+                       "type": "string",
+                       "description": "Formatted time of rate limit reset"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/siteinfo": {
+       "get": {
+         "summary": "Get domain details",
+         "operationId": "getSiteInfo",
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "total_users": {
+                       "type": "string"
+                     },
+                     "total_courses": {
+                       "type": "string"
+                     },
+                     "total_categories": {
+                       "type": "string"
+                     },
+                     "total_groups": {
+                       "type": "string"
+                     },
+                     "total_branches": {
+                       "type": "string"
+                     },
+                     "monthly_active_users": {
+                       "type": "string"
+                     },
+                     "signup_method": {
+                       "type": "string"
+                     },
+                     "signup_type": {
+                       "type": "string"
+                     },
+                     "verification": {
+                       "type": "string"
+                     },
+                     "paypal_email": {
+                       "type": "string"
+                     },
+                     "domain_map": {
+                       "type": "string"
+                     },
+                     "date_format": {
+                       "type": "string"
+                     },
+                     "limits": {
+                       "type": "object",
+                       "properties": {
+                         "maximum_brances": {
+                           "type": "integer"
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "Invalid API key provided"
+           },
+           "403": {
+             "description": "API is not enabled for the specified domain or the domain is currently inactive"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     },
+     "/v1/gettimeline": {
+       "get": {
+         "summary": "Get timeline entries",
+         "operationId": "getTimeline",
+         "parameters": [
+           {
+             "name": "event_type",
+             "in": "query",
+             "required": true,
+             "description": "The identifier describing the event type",
+             "schema": {
+               "type": "string"
+             }
+           },
+           {
+             "name": "user_id",
+             "in": "query",
+             "required": false,
+             "description": "User ID for user-related event types",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "course_id",
+             "in": "query",
+             "required": false,
+             "description": "Course ID for course-related event types",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "branch_id",
+             "in": "query",
+             "required": false,
+             "description": "Branch ID for branch-related event types",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "group_id",
+             "in": "query",
+             "required": false,
+             "description": "Group ID for group-related event types",
+             "schema": {
+               "type": "integer"
+             }
+           },
+           {
+             "name": "unit_id",
+             "in": "query",
+             "required": false,
+             "description": "Unit ID for unit-related event types",
+             "schema": {
+               "type": "integer"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Successful response",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "array",
+                   "items": {
+                     "type": "object",
+                     "properties": {
+                       "action": {
+                         "type": "string"
+                       },
+                       "message": {
+                         "type": "string"
+                       },
+                       "timestamp": {
+                         "type": "string"
+                       },
+                       "unix_timestamp": {
+                         "type": "string"
+                       },
+                       "user_id": {
+                         "type": "string"
+                       },
+                       "user_username": {
+                         "type": "string"
+                       },
+                       "user_email": {
+                         "type": "string"
+                       },
+                       "user_fullname": {
+                         "type": "string"
+                       },
+                       "object_id": {
+                         "type": "string"
+                       },
+                       "object_name": {
+                         "type": "string"
+                       },
+                       "event_counter": {
+                         "type": "string"
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "Bad request"
+           },
+           "401": {
+             "description": "Unauthorized"
+           },
+           "403": {
+             "description": "Forbidden"
+           },
+           "404": {
+             "description": "Not found"
+           },
+           "500": {
+             "description": "Internal server error"
+           }
+         }
+       }
+     }
+   },
+   "components": {
+     "schemas": {}
+   },
+   "security": []
+ }
